@@ -4,6 +4,7 @@ import flet as ft
 
 TEST_ON_PC = True
 LOGO = "logo.png"
+WORDMARK = "wordmark.png"
 BG_FILE= "mountain.jpg"
 
 async def main(Page: ft.Page) :
@@ -28,12 +29,13 @@ async def main(Page: ft.Page) :
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         controls=[
-                ft.Image(src = LOGO , width = 230 , height = 230),
+                ft.Image(src = LOGO, width = 210 , height = 210),
                 ft.Container(
                     offset=ft.Offset(0, -0.4),
-                    content=ft.Text("ASCEND" , size = 40 , weight = ft.FontWeight . BOLD , color = "white"),
+                    content=ft.Image(src=WORDMARK, width=250 , height=33),
+                    ),
+                   
 
-                ),
                 
                 ft.Text("Better Plans" , size = 14 , color = "grey"),
                 ft.Text("Higher Results", size=14, color="grey"),
@@ -41,6 +43,7 @@ async def main(Page: ft.Page) :
             
             ],
         )
+        
     bottom = ft . Column(
         left=0, right=0, bottom=50,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
