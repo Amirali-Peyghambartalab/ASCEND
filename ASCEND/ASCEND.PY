@@ -6,6 +6,29 @@ TEST_ON_PC = True
 LOGO = "logo.png"
 WORDMARK = "wordmark.png"
 BG_FILE= "mountain.jpg"
+SHOW_SPLASH = False
+CARD = "121823"
+
+def fa(n):
+    return str(n).translate(str.maketrans("0123456789" , "۰۱۲۳۴۵۶۷۸۹"))
+
+TASKS = [
+    {"TITLE" : "مطالعه زبان انگلیسی" , "MIN" : 30, "CAT" : "یادگیری" , "DONE" : True},
+    {"TITLE" : "تمرین ورزشی" , "MIN" : 60, "CAT" : "سلامتی" , "DONE" : True},
+    {"TITLE" : "کار روی پروژه " , "MIN" : 90, "CAT" : "کار" , "DONE" : True},
+    {"TITLE" : "مطالعه کتاب" , "MIN" : 45, "CAT" : "رشد فردی" , "DONE" : False},
+
+]
+
+def build_home(page : ft. Page):
+    count_text = ft.Text("" , size=14 , color="white")
+    ring = ft.ProgressRing(value=0 , width=64, height=64, stroke_width=5,
+                           color="#dfe7f3" , bgcolor="#232c3b")
+
+    def set_progress():
+        done = sum(1 for t in TASKS if t ["done"])
+        count_text.value = f"{fa(done)}/{fa(len(TASKS))}"
+    
 
 async def main(Page: ft.Page) :
     Page.title = "ASCEND"
