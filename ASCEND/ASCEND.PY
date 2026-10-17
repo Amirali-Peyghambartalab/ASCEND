@@ -7,7 +7,7 @@ LOGO = "logo.png"
 WORDMARK = "wordmark.png"
 BG_FILE= "mountain.jpg"
 SHOW_SPLASH = False
-CARD = "121823"
+CARD = "#121823"
 
 def fa(n):
     return str(n).translate(str.maketrans("0123456789" , "۰۱۲۳۴۵۶۷۸۹"))
