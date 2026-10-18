@@ -29,6 +29,68 @@ def build_home(page : ft. Page):
         done = sum(1 for t in TASKS if t ["done"])
         count_text.value = f"{fa(done)}/{fa(len(TASKS))}"
     
+    def task_card(t):
+        title = ft.Text(t["title"], size=15,
+                        color = "grey" if t ["done"] else "white")
+
+        def on_change(e):
+            t['done'] = e.control.value
+            title.color = "grey" if t["done"] else "white"
+            set_progress()
+            page.update()
+
+
+    return ft.Container(
+        bgcolor= CARD , border_radius=16, padding=12,
+        content=ft.Row(
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[
+                ft.Text(t["cat"] , size=12, color="grey"),
+                ft.Container(expand=True),
+                ft.Column(spacing=2, controls=[
+                    title,
+                    ft.Text(f"{fa(t['min'])} دقیقه", size=12, color="grey"),
+                ]),
+                ft.Checkbox(value=t["done"] , on_change=on_change),
+            ],
+        ),
+    )
+
+
+def quick_button(symbol, label):
+    return ft.Container(
+        expand=True, bgcolor=CARD, border_radius=16, padding=12,
+        content=ft.Column(
+            spacing=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[ft.Text(symbol, size=22, color="white"),
+                        ft.Text(label, size=11, color="grey")],
+        ),
+    )
+
+def nav_item(symbol, label, active=False):
+    c = "white" if active else "grey"
+    return ft.Column(
+        spacing=2, horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        controls=[ft.Text(symbol, size=20 , color=c),
+                  ft.Text(label, size=11, color=c)],
+    )
+
+header= ft.Row(
+    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+    vertical_alignment=ft.CrossAxisAlignment.START
+    controls=[
+        ft.Text("⚙", size=22, color="grey"),
+        ft.Column(
+            spacing=2,
+            horizontal_aligment=ft.CrossAxisAligment.CENTER,
+            controls=[
+                ft.image(src="logo.png" , width=44, height=44),
+                ft.image(src="wordmark.png", width=86, height=9),
+            ],
+        ),
+    ],
+)
+
 
 async def main(Page: ft.Page) :
     Page.title = "ASCEND"
