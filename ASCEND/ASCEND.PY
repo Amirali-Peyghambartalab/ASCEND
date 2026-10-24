@@ -6,17 +6,17 @@ TEST_ON_PC = True
 LOGO = "logo.png"
 WORDMARK = "wordmark.png"
 BG_FILE= "mountain.jpg"
-SHOW_SPLASH = False
+SHOW_SPLASH = True
 CARD = "#121823"
 
 def fa(n):
     return str(n).translate(str.maketrans("0123456789" , "۰۱۲۳۴۵۶۷۸۹"))
 
 TASKS = [
-    {"TITLE" : "مطالعه زبان انگلیسی" , "MIN" : 30, "CAT" : "یادگیری" , "DONE" : True},
-    {"TITLE" : "تمرین ورزشی" , "MIN" : 60, "CAT" : "سلامتی" , "DONE" : True},
-    {"TITLE" : "کار روی پروژه " , "MIN" : 90, "CAT" : "کار" , "DONE" : True},
-    {"TITLE" : "مطالعه کتاب" , "MIN" : 45, "CAT" : "رشد فردی" , "DONE" : False},
+    {"title" : "مطالعه زبان انگلیسی" , "min" : 30, "cat" : "یادگیری" , "done" : True},
+    {"title" : "تمرین ورزشی" , "min" : 60, "cat" : "سلامتی" , "done" : True},
+    {"title" : "کار روی پروژه " , "min" : 90, "cat" : "کار" , "done" : True},
+    {"title" : "مطالعه کتاب" , "min" : 45, "cat" : "رشد فردی" , "done" : False},
 
 ]
 
@@ -28,6 +28,7 @@ def build_home(page : ft. Page):
     def set_progress():
         done = sum(1 for t in TASKS if t ["done"])
         count_text.value = f"{fa(done)}/{fa(len(TASKS))}"
+        ring.value = done / len(TASKS)
     
     def task_card(t):
         title = ft.Text(t["title"], size=15,
@@ -40,57 +41,139 @@ def build_home(page : ft. Page):
             page.update()
 
 
-    return ft.Container(
-        bgcolor= CARD , border_radius=16, padding=12,
+        return ft.Container(
+            bgcolor= CARD , border_radius=16, padding=12,
+            content=ft.Row(
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Text(t["cat"] , size=12, color="grey"),
+                    ft.Container(expand=True),
+                    ft.Column(spacing=2, controls=[
+                        title,
+                        ft.Text(f"{fa(t['min'])} دقیقه", size=12, color="grey"),
+                    ]),
+                    ft.Checkbox(value=t["done"] , on_change=on_change),
+                ],
+            ),
+        )
+
+
+    def quick_button(symbol, label):
+        return ft.Container(
+            expand=True, bgcolor=CARD, border_radius=16, padding=12,
+            content=ft.Column(
+                spacing=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[ft.Text(symbol, size=22, color="white"),
+                            ft.Text(label, size=11, color="grey")],
+            ),
+        )
+
+    def nav_item(symbol, label, active=False):
+        c = "white" if active else "grey"
+        return ft.Column(
+            spacing=2, horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            controls=[ft.Text(symbol, size=20 , color=c),
+                    ft.Text(label, size=11, color=c)],
+        )
+
+    header= ft.Row(
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        vertical_alignment=ft.CrossAxisAlignment.START,
+        controls=[
+            ft.Text("⚙", size=22, color="grey"),
+            ft.Column(
+                spacing=2,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Image(src="logo.png" , width=44, height=44),
+                    ft.Image(src="wordmark.png", width=86, height=9),
+                ],
+            ),
+        ],
+    )
+
+    ring_box = ft.Stack(width=64, height=64, controls=[
+        ring,
+        ft.Container(width=64, height=64, alignment=ft.Alignment(0, 0),
+                    content=count_text),
+    ])
+
+    progrees_card = ft.Container(   
+        bgcolor=CARD, border_radius=18, padding=16,
         content=ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
-                ft.Text(t["cat"] , size=12, color="grey"),
-                ft.Container(expand=True),
-                ft.Column(spacing=2, controls=[
-                    title,
-                    ft.Text(f"{fa(t['min'])} دقیقه", size=12, color="grey"),
+                ft.Column(spacing=2 , controls=[
+                    ft.Text("وظایف امروز" , size=16,
+                            weight=ft.FontWeight.BOLD,color="white"),
+                    ft.Text("در حال پیشرفت", size=12, color="grey"),
                 ]),
-                ft.Checkbox(value=t["done"] , on_change=on_change),
+                ring_box,
             ],
         ),
     )
 
+    quick_row=ft.Row(spacing=10, controls=[
+        quick_button("▤" , "یادداشت ها "),
+        quick_button("▥" , "آمار و پیشرفت"),
+        quick_button("◎","اهداف"),
+        quick_button("▦","برنامه روزانه"),
+    ])
 
-def quick_button(symbol, label):
-    return ft.Container(
-        expand=True, bgcolor=CARD, border_radius=16, padding=12,
-        content=ft.Column(
-            spacing=6, horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            controls=[ft.Text(symbol, size=22, color="white"),
-                        ft.Text(label, size=11, color="grey")],
-        ),
+    list_title = ft.Row(
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        controls=[
+            ft.Text("کارهای امروز " , size=16,
+                    weight=ft.FontWeight.BOLD, color="white"),
+            ft.Text("مشاهده همه ," , size=12, color="grey"),
+        ],
     )
 
-def nav_item(symbol, label, active=False):
-    c = "white" if active else "grey"
-    return ft.Column(
-        spacing=2, horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        controls=[ft.Text(symbol, size=20 , color=c),
-                  ft.Text(label, size=11, color=c)],
+
+    body = ft.Column(
+        expand=True, spacing=14, scroll=ft.ScrollMode.AUTO,
+        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+        controls=[
+            header,
+            ft.Text("صبح بخیر" , size=26, weight=ft.FontWeight.BOLD, color="white"),
+            ft.Text("هر قدم کوچک, تو را به هدف بزرگتر نزدیکتر میکند .",
+                    size=13, color="grey"),
+            progrees_card,
+            quick_row,
+            list_title,
+            *[task_card(t) for t in TASKS],
+        ],
+    )
+    plus= ft.Container(
+        width=56, height=56, border_radius=28, bgcolor="#1a2230",
+        alignment=ft.Alignment(0,0),
+        content=ft.Text("+" , size=30, color="white"),
     )
 
-header= ft.Row(
-    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-    vertical_alignment=ft.CrossAxisAlignment.START
-    controls=[
-        ft.Text("⚙", size=22, color="grey"),
-        ft.Column(
-            spacing=2,
-            horizontal_aligment=ft.CrossAxisAligment.CENTER,
+    nav=ft.Container(
+        bgcolor="#0d121b", padding=12,
+        content=ft.Row(
+            alignment=ft.MainAxisAlignment.SPACE_AROUND,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
-                ft.image(src="logo.png" , width=44, height=44),
-                ft.image(src="wordmark.png", width=86, height=9),
+                nav_item("☺","پروفایل"),
+                nav_item("▥","آمار"),
+                plus,
+                nav_item("◎","اهداف"),
+                nav_item("⌂","خانه", True),
             ],
         ),
-    ],
-)
+    )
 
+
+    set_progress()
+    page.add(ft.SafeArea(expand=True, content=ft.Column(
+        expand=True, spacing=0,
+        controls=[ft.Container(expand=True, padding=20, content=body),nav],
+    )))
+
+    page.update()
 
 async def main(Page: ft.Page) :
     Page.title = "ASCEND"
@@ -101,6 +184,11 @@ async def main(Page: ft.Page) :
     if TEST_ON_PC :
         Page.window.width = 390
         Page.window.height = 844
+
+    if not SHOW_SPLASH:
+        Page.bgcolor = "#0a0e16"
+        build_home(Page)
+        return
 
     here = os.path.dirname(os.path.abspath(__file__))
     has_bg = os.path.exists(os.path.join(here , "assets" , BG_FILE))
@@ -168,23 +256,7 @@ async def main(Page: ft.Page) :
 
     Page.clean()
     Page.bgcolor = "#0a0e16"
-    Page.padding = 20
-    Page.add(
-        ft.Column(
-            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
-            controls=[
-                ft.Text("GOOD MORNING", size = 28, weight=ft.FontWeight.BOLD , color = "white"),
-                ft.Text("Every small step brings you closer." , size = 14, color = "grey"),
-                ft.Container(
-                    content=ft.Text("3/4 : today's tasks" , size = 18 , color = "white") ,
-                    bgcolor="#121823",
-                    border_radius=18,
-                    padding=16,
-
-                ),
-            ],
-        )
-    )
+    build_home(Page)
     Page.update()
 
 ft.run(main , assets_dir="assets")
